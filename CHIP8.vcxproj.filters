@@ -43,4 +43,15 @@
       <Filter>Chip8.App\src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="memory.h">
+      <Filter>Chip8.Core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.h">
+      <Filter>Chip8.Core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Chip8.Core\include</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

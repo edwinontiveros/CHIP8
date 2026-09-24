@@ -4,12 +4,11 @@
 #define CHIP8_CONSTANTS_H 1
 
 #include <cstdint>
+#include "constants.h"
 
 namespace chip8::constants
 {
-    template<typename T>
-    using C8Const = inline constexpr T;
-
+    using C8Const = chip8::
     namespace memory
     {
         C8Const<std::uint16_t> MEMORY_SIZE      = (1024 * 4);
