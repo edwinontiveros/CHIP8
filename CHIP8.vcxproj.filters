@@ -1,20 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="docs">
       <UniqueIdentifier>{7951ef89-6b4c-491b-b8bc-2600f56b895a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{4d358f6e-b85a-4c0c-be0c-21edefebf0d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core">
+      <UniqueIdentifier>{bb09e699-46b4-48aa-b02e-c3d9e0e83e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.App">
+      <UniqueIdentifier>{24021126-1dcc-4ab9-83f6-3e782762a86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\src">
+      <UniqueIdentifier>{cce4c927-2494-4955-ab6c-3e670e62c4c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include">
+      <UniqueIdentifier>{d0298d05-1137-40ab-826e-c30fb2fe6a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.App\src">
+      <UniqueIdentifier>{498080d6-3995-4090-8a33-61d6c1fa1afb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.App\include">
+      <UniqueIdentifier>{1f6e4273-be23-47ff-8c69-b06df19365a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{202fda35-29a3-4762-b899-416bb6a29372}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,8 +39,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="constants.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="main.cpp">
+      <Filter>Chip8.App\src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
