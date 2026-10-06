@@ -116,20 +116,22 @@
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <TreatWarningAsError>true</TreatWarningAsError>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL3_ttf\include;$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ShowProgress>LinkVerbose</ShowProgress>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\lib\x64;$(SolutionDir)External\SDL3_ttf\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;SDL3_ttf.lib</AdditionalDependencies>
+      <LinkStatus>true</LinkStatus>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)External\SDL3\lib\x64\SDL3.dll" "$(TargetDir)SDL3.dll"</Command>
+      <Command>copy /Y "$(SolutionDir)External\SDL3\lib\x64\SDL3.dll" "$(TargetDir)SDL3.dll"
+copy /Y "$(SolutionDir)External\SDL3_ttf\lib\x64\SDL3_ttf.dll" "$(TargetDir)SDL3_ttf.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy SDL3 lib to builds</Message>
+      <Message>Copy SDL3 libraries to output build folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,12 +167,15 @@
     <None Include="chip8.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="frontend.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h" />
+    <ClInclude Include="frontend.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="sdl_wrappers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

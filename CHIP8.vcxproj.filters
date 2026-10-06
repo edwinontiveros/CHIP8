@@ -32,6 +32,15 @@
     <Filter Include="Tests">
       <UniqueIdentifier>{202fda35-29a3-4762-b899-416bb6a29372}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Chip8.Graphics">
+      <UniqueIdentifier>{18f6b00e-119b-46ef-9536-56def9f3d2be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Graphics\include">
+      <UniqueIdentifier>{3d9ad0d8-23bc-48ea-9597-46f6b9f7def3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Graphics\src">
+      <UniqueIdentifier>{893ef5f4-a754-4d8c-ab6d-c51b6081f8d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="chip8.md">
@@ -41,6 +50,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Chip8.App\src</Filter>
+    </ClCompile>
+    <ClCompile Include="frontend.cpp">
+      <Filter>Chip8.Graphics\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +64,12 @@
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>Chip8.Core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl_wrappers.h">
+      <Filter>Chip8.Graphics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="frontend.h">
+      <Filter>Chip8.Graphics\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
