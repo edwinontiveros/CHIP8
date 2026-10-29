@@ -116,7 +116,7 @@
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <TreatWarningAsError>true</TreatWarningAsError>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL3_ttf\include;$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)External\SDL3_ttf\include;$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,7 +145,7 @@ copy /Y "$(SolutionDir)External\SDL3_ttf\lib\x64\SDL3_ttf.dll" "$(TargetDir)SDL3
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)External\SDL3\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,20 +164,36 @@ copy /Y "$(SolutionDir)External\SDL3_ttf\lib\x64\SDL3_ttf.dll" "$(TargetDir)SDL3
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
+    <None Include=".editorconfig" />
+    <None Include=".gitignore" />
     <None Include="chip8.md" />
+    <None Include="cpp.hint" />
+    <None Include="LICENSE" />
+    <None Include="packages.config" />
+    <None Include="README.md" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="frontend.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\renderer\frontend.cpp" />
+    <ClCompile Include="src\app\main.cpp" />
+    <ClCompile Include="src\core\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="constants.h" />
-    <ClInclude Include="frontend.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="types.h" />
-    <ClInclude Include="sdl_wrappers.h" />
+    <ClInclude Include="include\core\constants.h" />
+    <ClInclude Include="include\renderer\frontend.h" />
+    <ClInclude Include="include\core\memory.h" />
+    <ClInclude Include="include\core\types.h" />
+    <ClInclude Include="include\renderer\sdl_wrappers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.8\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+  </Target>
 </Project>

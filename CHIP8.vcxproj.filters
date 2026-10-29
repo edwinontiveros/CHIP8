@@ -29,16 +29,13 @@
     <Filter Include="Chip8.App\include">
       <UniqueIdentifier>{1f6e4273-be23-47ff-8c69-b06df19365a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{202fda35-29a3-4762-b899-416bb6a29372}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Chip8.Graphics">
+    <Filter Include="Chip8.Renderer">
       <UniqueIdentifier>{18f6b00e-119b-46ef-9536-56def9f3d2be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Chip8.Graphics\include">
+    <Filter Include="Chip8.Renderer\include">
       <UniqueIdentifier>{3d9ad0d8-23bc-48ea-9597-46f6b9f7def3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Chip8.Graphics\src">
+    <Filter Include="Chip8.Renderer\src">
       <UniqueIdentifier>{893ef5f4-a754-4d8c-ab6d-c51b6081f8d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -46,30 +43,41 @@
     <None Include="chip8.md">
       <Filter>docs</Filter>
     </None>
+    <None Include="cpp.hint" />
+    <None Include=".gitignore" />
+    <None Include=".editorconfig" />
+    <None Include=".clang-format" />
+    <None Include="packages.config" />
+    <None Include="vcpkg.json" />
+    <None Include="LICENSE" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\app\main.cpp">
       <Filter>Chip8.App\src</Filter>
     </ClCompile>
-    <ClCompile Include="frontend.cpp">
-      <Filter>Chip8.Graphics\src</Filter>
+    <ClCompile Include="src\renderer\frontend.cpp">
+      <Filter>Chip8.Renderer\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\memory.cpp">
+      <Filter>Chip8.Core\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="memory.h">
+    <ClInclude Include="include\core\memory.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="constants.h">
+    <ClInclude Include="include\core\constants.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="include\core\types.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="sdl_wrappers.h">
-      <Filter>Chip8.Graphics\include</Filter>
+    <ClInclude Include="include\renderer\sdl_wrappers.h">
+      <Filter>Chip8.Renderer\include</Filter>
     </ClInclude>
-    <ClInclude Include="frontend.h">
-      <Filter>Chip8.Graphics\include</Filter>
+    <ClInclude Include="include\renderer\frontend.h">
+      <Filter>Chip8.Renderer\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
