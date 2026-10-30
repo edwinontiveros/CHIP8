@@ -8,9 +8,6 @@
     <Filter Include="docs">
       <UniqueIdentifier>{7951ef89-6b4c-491b-b8bc-2600f56b895a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External">
-      <UniqueIdentifier>{4d358f6e-b85a-4c0c-be0c-21edefebf0d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Chip8.Core">
       <UniqueIdentifier>{bb09e699-46b4-48aa-b02e-c3d9e0e83e21}</UniqueIdentifier>
     </Filter>

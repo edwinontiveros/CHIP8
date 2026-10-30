@@ -13,9 +13,11 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Third party tools
+# Third party tools an vcpkg depdendencies
 External/SDL*
 *.zip
+BACKUP/
+vcpkg_*/
 
 # Mono auto generated files
 mono_crash.*
