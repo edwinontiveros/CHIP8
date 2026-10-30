@@ -13,6 +13,10 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Third party tools
+External/SDL*
+*.zip
+
 # Mono auto generated files
 mono_crash.*
 
