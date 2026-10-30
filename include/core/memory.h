@@ -13,37 +13,38 @@ namespace chip8::memory
     class Memory final
     {
      public:
-        static constexpr std::size_t MEM_SIZE = chip8::constants::memory::MEMORY_SIZE;
-        using Storage                         = chip8::types::Storage<MEM_SIZE>;
-        using Byte                            = chip8::types::Byte;
-        using Address                         = chip8::types::Address;
-        using Word                            = chip8::types::Word;
-        using Region                          = std::span<Byte>;
-        using ConstRegion                     = std::span<const Byte>;
-        using DumpRegion                      = std::span<const Byte, MEM_SIZE>;
+        static constexpr std::size_t MEM_SIZE     = chip8::constants::memory::MEMORY_SIZE;
+        static constexpr std::size_t FONTSET_SIZE = chip8::constants::memory::BUILTIN_FONTSET_SIZE;
+        static constexpr std::size_t CLEAR_BYTE   = chip8::constants::memory::CLEAR_BYTE;
 
-    private:
-        /// <summary>
-        /// Default CHIP8 fonts sprite table.
-        /// </summary>
-        static constexpr chip8::types::Storage<chip8::constants::memory::BUILTIN_FONTSET_SIZE>
-            FONTSET = {
-                0x0F, 0x09, 0x09, 0x09, 0x0F,  // 0
-                0x02, 0x06, 0x02, 0x02, 0x07,  // 1
-                0x0F, 0x01, 0x0F, 0x08, 0x0F,  // 2
-                0x0F, 0x01, 0x0F, 0x01, 0x0F,  // 3
-                0x09, 0x09, 0x0F, 0x01, 0x01,  // 4
-                0x0F, 0x08, 0x0F, 0x01, 0x0F,  // 5
-                0x0F, 0x08, 0x0F, 0x09, 0x0F,  // 6
-                0x0F, 0x01, 0x02, 0x04, 0x04,  // 7
-                0x0F, 0x09, 0x0F, 0x09, 0x0F,  // 8
-                0x0F, 0x09, 0x0F, 0x01, 0x0F,  // 9
-                0x0F, 0x09, 0x0F, 0x09, 0x09,  // A
-                0x0E, 0x09, 0x0E, 0x09, 0x0E,  // B
-                0x0F, 0x08, 0x08, 0x08, 0x0F,  // C
-                0x0E, 0x09, 0x09, 0x09, 0x0E,  // D
-                0x0F, 0x08, 0x0F, 0x08, 0x0F,  // E
-                0x0F, 0x08, 0x0F, 0x08, 0x08,  // F
+        using Byte        = chip8::types::Byte;
+        using Address     = chip8::types::Address;
+        using Word        = chip8::types::Word;
+        using Region      = chip8::types::Region;
+        using ConstRegion = chip8::types::ConstRegion;
+
+        template<std::size_t size>
+        using MemoryStorage = chip8::types::Storage<Byte, size>;
+
+     private:
+        /// @brief Default fontset sprite table
+        static constexpr MemoryStorage<FONTSET_SIZE> FONTSET = {
+            0x0F, 0x09, 0x09, 0x09, 0x0F,  // 0
+            0x02, 0x06, 0x02, 0x02, 0x07,  // 1
+            0x0F, 0x01, 0x0F, 0x08, 0x0F,  // 2
+            0x0F, 0x01, 0x0F, 0x01, 0x0F,  // 3
+            0x09, 0x09, 0x0F, 0x01, 0x01,  // 4
+            0x0F, 0x08, 0x0F, 0x01, 0x0F,  // 5
+            0x0F, 0x08, 0x0F, 0x09, 0x0F,  // 6
+            0x0F, 0x01, 0x02, 0x04, 0x04,  // 7
+            0x0F, 0x09, 0x0F, 0x09, 0x0F,  // 8
+            0x0F, 0x09, 0x0F, 0x01, 0x0F,  // 9
+            0x0F, 0x09, 0x0F, 0x09, 0x09,  // A
+            0x0E, 0x09, 0x0E, 0x09, 0x0E,  // B
+            0x0F, 0x08, 0x08, 0x08, 0x0F,  // C
+            0x0E, 0x09, 0x09, 0x09, 0x0E,  // D
+            0x0F, 0x08, 0x0F, 0x08, 0x0F,  // E
+            0x0F, 0x08, 0x0F, 0x08, 0x08,  // F
         };
 
         /// @brief Initialize fontset memory region with builtin font sprites
@@ -61,11 +62,9 @@ namespace chip8::memory
          * @brief Get a memory dump from 0x0000 to 0x0FFF
          * @return Span<> with current memory state.
          */
-        CHIP8_NODISCARD DumpRegion dump() const noexcept;
+        CHIP8_NODISCARD ConstRegion dump() const noexcept;
 
-        /**
-         * @brief
-         */
+        /// @brief Clear all memory bytes to 0x0000 (CLEAR_BYTE) and fontset region to defaults.
         void clear() noexcept;
 
         /**
@@ -93,10 +92,8 @@ namespace chip8::memory
          */
 
      private:
-        /**
-         * @brief Memory container, 4KB in size.
-         */
-        Storage m_data {};
+        /// @brief Memory container, 4KB in size.
+        MemoryStorage<MEM_SIZE> m_data {};
     };
 
     /**

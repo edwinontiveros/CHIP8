@@ -3,8 +3,6 @@
 #ifndef CHIP8_CONSTANTS_H
 #define CHIP8_CONSTANTS_H 1
 
-#include <cstdint>
-
 #include "types.h"
 
 namespace chip8::constants

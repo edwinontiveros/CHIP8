@@ -1,24 +1,21 @@
 #include "core/memory.h"
 
-#include <iostream>
 #include <stdexcept>
 
 #include "core/constants.h"
 
 namespace chip8::memory
 {
-    Memory::DumpRegion Memory::dump() const noexcept { return m_data; }
+    Memory::ConstRegion Memory::dump() const noexcept { return m_data; }
 
     void Memory::clear() noexcept {
-        m_data.fill(chip8::constants::memory::CLEAR_BYTE);
+        m_data.fill(CLEAR_BYTE);
         initialize_fontset();
     }
 
     void Memory::initialize_fontset() noexcept {
         const auto& mem = m_data.data();
-        for (std::size_t i = 0; i < chip8::constants::memory::BUILTIN_FONTSET_SIZE; i++) {
-            mem[i] = FONTSET.at(i);
-        }
+        for (std::size_t i = 0; i < FONTSET_SIZE; i++) { mem[i] = FONTSET[i]; }
     }
 
     void Memory::validate_address(Address address, std::size_t alignment) {
