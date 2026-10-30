@@ -13,6 +13,12 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Third party tools an vcpkg depdendencies
+External/SDL*
+*.zip
+BACKUP/
+vcpkg_*/
+
 # Mono auto generated files
 mono_crash.*
 
@@ -398,3 +404,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/External/SDL3-devel-3.4.16-VC.zip
+/External/SDL3_ttf-3.2.2-win32-x64.zip
+/External/SDL3_ttf-devel-3.2.2-VC.zip
+/External/SDL3_ttf/.git-hash

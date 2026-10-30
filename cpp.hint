@@ -1,0 +1,2 @@
+// memory macro hints
+#define CHIP8_NODISCARD [[nodiscard]]
