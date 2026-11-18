@@ -5,17 +5,25 @@
 
 #include <span>
 
-#include "constants.h"
-#include "types.h"
+#include <type_traits>
+
+#include "constants/memory_constants.h"
+#include "types/types.h"
 
 namespace chip8::memory
 {
+
+    template<typename T>
+    concept MemoryAccessType =
+        std::is_same_v<T, chip8::types::Byte> || std::is_same_v<T, chip8::types::Word>;
+
     class Memory final
     {
-     public:
-        static constexpr std::size_t MEM_SIZE     = chip8::constants::memory::MEMORY_SIZE;
-        static constexpr std::size_t FONTSET_SIZE = chip8::constants::memory::BUILTIN_FONTSET_SIZE;
-        static constexpr std::size_t CLEAR_BYTE   = chip8::constants::memory::CLEAR_BYTE;
+    public:
+        static constexpr std::size_t MEM_SIZE = chip8::constants::memory::MEMORY_SIZE;
+        static constexpr std::size_t FONTSET_SIZE =
+            chip8::constants::memory::BUILTIN_FONTSET_REGION_SIZE;
+        static constexpr std::size_t CLEAR_BYTE = chip8::constants::memory::CLEAR_BYTE;
 
         using Byte        = chip8::types::Byte;
         using Address     = chip8::types::Address;
@@ -26,7 +34,14 @@ namespace chip8::memory
         template<std::size_t size>
         using MemoryStorage = chip8::types::Storage<Byte, size>;
 
-     private:
+        enum class RegionType
+        {
+            Fontset,
+            Unused,
+            ProgramRam,
+        };
+
+    private:
         /// @brief Default fontset sprite table
         static constexpr MemoryStorage<FONTSET_SIZE> FONTSET = {
             0x0F, 0x09, 0x09, 0x09, 0x0F,  // 0
@@ -51,13 +66,30 @@ namespace chip8::memory
         void initialize_fontset() noexcept;
 
         /**
-         * @brief Validate memory address lies within Chip8 valid regions.
-         * @param address Memory address to check.
-         * @param alignment Validate memory address is aligned to this size
+         * @brief Validates that a memory access falls within valid CHIP-8 address space.
+         * @param address Starting of memory address.
+         * @param size Number of bytes to access.
          */
-        static void validate_address(Address address, std::size_t alignment);
+        static void validate_address(Address address, std::size_t size);
 
-     public:
+        /**
+         * @brief Validates the address alignment for access.
+         * @tparam T The type to check: Word or Byte.
+         * @param address The memory address to validate.
+         */
+        template<MemoryAccessType T>
+        static void validate_address_alignment(Address address);
+
+        /**
+         * @brief Helper function: Memory region factory function.
+         * @tparam Storage_ Memory Storage type.
+         * @tparam Region_ Memory Region selector.
+         * @return ConstRegion or Region, depending on the caller constness.
+         */
+        template<RegionType Region_, class Storage_>
+        CHIP8_NODISCARD static constexpr auto make_view(Storage_& storage) noexcept;
+
+    public:
         /**
          * @brief Get a memory dump from 0x0000 to 0x0FFF
          * @return Span<> with current memory state.
@@ -83,15 +115,23 @@ namespace chip8::memory
          */
         template<typename T> void write(Address address, T value);
 
-        /*
-         * ==========================
-         *
-         *   Memory region accessors
-         *
-         * ==========================
+        /**
+         * @brief Get a mutable view of a memory region.
+         * @tparam Region_ Memory region to view.
+         * @return A mutable Region type
          */
+        template<RegionType Region_>
+        CHIP8_NODISCARD constexpr Region view() noexcept;
 
-     private:
+        /**
+         * @brief Get a read-only view of a memory region.
+         * @tparam Region_ Memory region to view.
+         * @return A mutable Region type
+         */
+        template<RegionType Region_>
+        CHIP8_NODISCARD constexpr ConstRegion view() const noexcept;
+
+    private:
         /// @brief Memory container, 4KB in size.
         MemoryStorage<MEM_SIZE> m_data {};
     };
@@ -102,7 +142,7 @@ namespace chip8::memory
      * @return A Byte read from the address
      */
     template<>
-    CHIP8_NODISCARD Memory::Byte Memory::read<Memory::Byte>(Memory::Address address) const;
+    CHIP8_NODISCARD Memory::Byte Memory::read<Memory::Byte>(Address address) const;
 
     /**
      * @brief Template specialization to read a Word from memory
@@ -110,7 +150,7 @@ namespace chip8::memory
      * @return A Word read from the address
      */
     template<>
-    CHIP8_NODISCARD Memory::Word Memory::read<Memory::Word>(Memory::Address address) const;
+    CHIP8_NODISCARD Memory::Word Memory::read<Memory::Word>(Address address) const;
 
     /**
      * @brief Template specialization to write a Byte value to memory
@@ -118,7 +158,7 @@ namespace chip8::memory
      * @param value The Byte value to write
      */
     template<>
-    void Memory::write<Memory::Byte>(Memory::Address address, Memory::Byte value);
+    void Memory::write<Memory::Byte>(Address address, Byte value);
 
     /**
      * @brief Template specialization to write a Word value to memory
@@ -126,7 +166,7 @@ namespace chip8::memory
      * @param value The Word value to write
      */
     template<>
-    void Memory::write<Memory::Word>(Memory::Address address, Memory::Word value);
+    void Memory::write<Memory::Word>(Address address, Word value);
 
 }  // namespace chip8::memory
 

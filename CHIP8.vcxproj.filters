@@ -35,6 +35,9 @@
     <Filter Include="Chip8.Renderer\src">
       <UniqueIdentifier>{893ef5f4-a754-4d8c-ab6d-c51b6081f8d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{5eaf2f8c-6bed-4306-8a6b-82232abddb9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="chip8.md">
@@ -44,7 +47,6 @@
     <None Include=".gitignore" />
     <None Include=".editorconfig" />
     <None Include=".clang-format" />
-    <None Include="packages.config" />
     <None Include="vcpkg.json" />
     <None Include="LICENSE" />
     <None Include="README.md" />
@@ -53,28 +55,23 @@
     <ClCompile Include="src\app\main.cpp">
       <Filter>Chip8.App\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\frontend.cpp">
-      <Filter>Chip8.Renderer\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\memory.cpp">
+    <ClCompile Include="src\core\memory\memory.cpp">
       <Filter>Chip8.Core\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core\memory.h">
+    <ClInclude Include="include\core\memory\memory.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\constants.h">
+    <ClInclude Include="include\types\types.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\types.h">
-      <Filter>Chip8.Core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\renderer\sdl_wrappers.h">
-      <Filter>Chip8.Renderer\include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\renderer\frontend.h">
-      <Filter>Chip8.Renderer\include</Filter>
-    </ClInclude>
+    <ClInclude Include="include\core\cpu\cpu.h" />
+    <ClInclude Include="include\constants\memory_constants.h" />
+    <ClInclude Include="include\constants\display_constants.h" />
+    <ClInclude Include="include\constants\input_constants.h" />
+    <ClInclude Include="include\constants\cpu_constants.h" />
+    <ClInclude Include="include\pch.h" />
   </ItemGroup>
 </Project>
