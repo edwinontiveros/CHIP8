@@ -3,6 +3,8 @@
 #ifndef PCH_H
 #define PCH_H 1
 
+#include "chip8_macros.h"
+
 #include <cstddef>
 #include <cstdint>
 

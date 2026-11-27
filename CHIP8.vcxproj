@@ -191,6 +191,7 @@ copy /Y "$(SolutionDir)External\SDL3_ttf\lib\x64\SDL3_ttf.dll" "$(TargetDir)SDL3
     <ClInclude Include="include\constants\display_constants.h" />
     <ClInclude Include="include\constants\input_constants.h" />
     <ClInclude Include="include\constants\memory_constants.h" />
+    <ClInclude Include="include\chip8_macros.h" />
     <ClInclude Include="include\pch.h" />
     <ClInclude Include="include\core\cpu\cpu.h" />
     <ClInclude Include="include\core\memory\memory.h" />

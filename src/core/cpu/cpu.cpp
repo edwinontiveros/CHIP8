@@ -35,8 +35,7 @@ void Cpu::decode_and_execute() {
                 }
                 default: {
                     // SYS() falls here but it's not defined
-                    XXXX();
-                    return;
+                    invalid_opcode();
                 }
             }
         }
@@ -57,6 +56,7 @@ void Cpu::decode_and_execute() {
             return;
         }
         case 0x5000: {
+            if ((m_opcode & 0x000F) != 0) { invalid_opcode(); }
             SEV();
             return;
         }
@@ -108,12 +108,12 @@ void Cpu::decode_and_execute() {
                     return;
                 }
                 default: {
-                    XXXX();
-                    return;
+                    invalid_opcode();
                 }
             }
         }
         case 0x9000: {
+            if ((m_opcode & 0x000F) == 0) { invalid_opcode(); }
             SNEV();
             return;
         }
@@ -145,8 +145,7 @@ void Cpu::decode_and_execute() {
                     return;
                 }
                 default: {
-                    XXXX();
-                    return;
+                    invalid_opcode();
                 }
             }
         }
@@ -190,14 +189,12 @@ void Cpu::decode_and_execute() {
                     return;
                 }
                 default: {
-                    XXXX();
-                    return;
+                    invalid_opcode();
                 }
             }
         }
         default: {
-            XXXX();
-            return;
+            invalid_opcode();
         }
     }
 }
@@ -248,9 +245,9 @@ types::Word Cpu::get_operand(Operand op) const noexcept {
     }
 }
 
-void Cpu::SYS() { throw std::exception("SYS function not implemented"); }
+void Cpu::SYS() { throw std::runtime_error("SYS function not implemented"); }
 
-void Cpu::CLS() { throw std::exception("CLS Function not implemented"); }
+void Cpu::CLS() { throw std::runtime_error("CLS Function not implemented"); }
 
 void Cpu::RET() {
     if (m_stkp < 1 || m_stack.size() < 1)
@@ -479,11 +476,11 @@ void Cpu::RND() {
     set_register(x, value);
 }
 
-void Cpu::DRW() { throw std::exception("DRW function not implemented"); }
+void Cpu::DRW() { throw std::runtime_error("DRW function not implemented"); }
 
-void Cpu::SKP() { throw std::exception("SKP function not implemented"); }
+void Cpu::SKP() { throw std::runtime_error("SKP function not implemented"); }
 
-void Cpu::SKNP() { throw std::exception("SKNP function not implemented"); }
+void Cpu::SKNP() { throw std::runtime_error("SKNP function not implemented"); }
 
 void Cpu::LDT() {
     const auto x = static_cast<types::Address>(get_operand(Operand::X));
@@ -491,7 +488,7 @@ void Cpu::LDT() {
     set_register(x, m_dt);
 }
 
-void Cpu::LDK() { throw std::exception("LDK function not implemented"); }
+void Cpu::LDK() { throw std::runtime_error("LDK function not implemented"); }
 
 void Cpu::LDTV() {
     const auto x = static_cast<types::Address>(get_operand(Operand::X));
@@ -516,13 +513,19 @@ void Cpu::ADDI() {
     m_i = target;
 }
 
-void Cpu::LDF() { throw std::exception("LDF function not implemented"); }
+void Cpu::LDF() { throw std::runtime_error("LDF function not implemented"); }
 
-void Cpu::LDBCD() { throw std::exception("LDBCD function not implemented"); }
+void Cpu::LDBCD() { throw std::runtime_error("LDBCD function not implemented"); }
 
-void Cpu::LDIV() { throw std::exception("LDIV function not implemented"); }
+void Cpu::LDIV() { throw std::runtime_error("LDIV function not implemented"); }
 
-void Cpu::LDVI() { throw std::exception("LDVI function not implemented"); }
+void Cpu::LDVI() { throw std::runtime_error("LDVI function not implemented"); }
 
-void Cpu::XXXX() { throw std::runtime_error(std::format("Unknown opcode: {:#x}", m_opcode)); }
+void Cpu::invalid_opcode() {
+    const auto opcode_address =
+        static_cast<types::Address>(m_pc - cpu_constants::registers::INSTRUCTION_SIZE);
+
+    throw std::runtime_error(std::format("Illegal instruction opcode {:#06X} at PC {:#06X}",
+                                         m_opcode, opcode_address));
+}
 

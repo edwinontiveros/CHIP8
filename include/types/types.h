@@ -8,8 +8,6 @@
 #include <span>
 #include <stack>
 
-#define CHIP8_NODISCARD [[nodiscard]]
-
 namespace chip8::types
 {
     using Byte        = std::uint8_t;

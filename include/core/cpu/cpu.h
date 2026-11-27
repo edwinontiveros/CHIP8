@@ -3,7 +3,8 @@
 #ifndef CHIP8_CPU_H
 #define CHIP8_CPU_H 1
 
-#include <cstdint>
+#include "chip8_macros.h"
+
 #include <random>
 
 #include "constants/cpu_constants.h"
@@ -55,7 +56,7 @@ namespace chip8::cpu
         void decode_and_execute();
 
         /// Unknown or malformed opcode handler.
-        void XXXX();
+        CHIP8_NORETURN void invalid_opcode();
 
     public:
         explicit Cpu(Memory& m) : m_memory(m) {}
