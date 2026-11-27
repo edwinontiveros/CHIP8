@@ -3,8 +3,6 @@
 #ifndef CHIP8_MEMORY_H
 #define CHIP8_MEMORY_H 1
 
-#include <span>
-
 #include <type_traits>
 
 #include "constants/memory_constants.h"
@@ -71,14 +69,6 @@ namespace chip8::memory
          * @param size Number of bytes to access.
          */
         static void validate_address(Address address, std::size_t size);
-
-        /**
-         * @brief Validates the address alignment for access.
-         * @tparam T The type to check: Word or Byte.
-         * @param address The memory address to validate.
-         */
-        template<MemoryAccessType T>
-        static void validate_address_alignment(Address address);
 
         /**
          * @brief Helper function: Memory region factory function.
