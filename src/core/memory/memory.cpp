@@ -3,11 +3,10 @@
 #include "core/memory/memory.h"
 
 #include <algorithm>
-#include <span>
 #include <stdexcept>
 #include <utility>
 
-#include <type_traits>
+#include "types/types.h"
 
 namespace chip8::memory
 {
@@ -28,16 +27,6 @@ namespace chip8::memory
             throw std::out_of_range("CHIP-8 memory access out of range.");
     }
 
-    template<MemoryAccessType T>
-    void chip8::memory::Memory::validate_address_alignment(Address address) {
-        if constexpr (std::is_same_v<T, Word>) {
-            constexpr auto alignment = alignof(T);
-            if (address % alignment != 0) {
-                throw std::invalid_argument("Unaligned memory access.");
-            }
-        }
-    }
-
     /*
      *==========================
      * Template specializations
@@ -46,31 +35,34 @@ namespace chip8::memory
 
     template<>
     Memory::Byte Memory::read<Memory::Byte>(Address address) const {
-        validate_address(address, alignof(Memory::Byte));
+        validate_address(address, alignof(Byte));
         return m_data[address];
     }
 
     template<>
     void Memory::write<Memory::Byte>(Address address, Memory::Byte value) {
-        validate_address(address, alignof(Memory::Byte));
+        validate_address(address, alignof(Byte));
         m_data[address] = value;
     }
 
     template<>
     Memory::Word Memory::read<Memory::Word>(Address address) const {
-        validate_address(address, alignof(Memory::Word));
+        validate_address(address, alignof(Word));
+
         const auto high = static_cast<Word>(read<Byte>(address));
         const auto low  = static_cast<Word>(read<Byte>(address + 1));
+
         return static_cast<Word>((high << 8) | low);
     }
 
     template<>
     void Memory::write<Memory::Word>(Address address, Word value) {
-        validate_address(address, alignof(Memory::Word));
-        const auto high = static_cast<Byte>(value >> 8);
-        write<Byte>(address, high);
+        validate_address(address, alignof(Word));
 
-        const auto low = static_cast<Byte>(value & 0x00FF);
+        const auto high = static_cast<Byte>(value >> 8);
+        const auto low  = static_cast<Byte>(value & 0x00FF);
+
+        write<Byte>(address, high);
         write<Byte>(address + 1, low);
     }
 
