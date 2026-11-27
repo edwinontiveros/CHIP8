@@ -1,2 +1,3 @@
-// memory macro hints
+// chip8 macro hints
 #define CHIP8_NODISCARD [[nodiscard]]
+#define CHIP8_NORETURN  [[noreturn]]

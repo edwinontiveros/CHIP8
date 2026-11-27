@@ -114,5 +114,8 @@
     <ClInclude Include="include\types\types.h">
       <Filter>Chip8.Core\include\cpu\types</Filter>
     </ClInclude>
+    <ClInclude Include="include\chip8_macros.h">
+      <Filter>Chip8.Core\include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

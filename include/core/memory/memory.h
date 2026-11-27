@@ -3,6 +3,8 @@
 #ifndef CHIP8_MEMORY_H
 #define CHIP8_MEMORY_H 1
 
+#include "chip8_macros.h"
+
 #include <type_traits>
 
 #include "constants/memory_constants.h"
