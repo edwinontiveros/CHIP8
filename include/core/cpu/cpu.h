@@ -3,8 +3,8 @@
 #ifndef CHIP8_CPU_H
 #define CHIP8_CPU_H 1
 
-#include <cstddef>
-#include <cstdio>
+#include <cstdint>
+#include <random>
 
 #include "constants/cpu_constants.h"
 #include "constants/memory_constants.h"
@@ -13,200 +13,147 @@
 
 namespace chip8::cpu
 {
+    namespace types            = chip8::types;
+    namespace cpu_constants    = chip8::constants::cpu;
+    namespace memory_constants = chip8::constants::memory;
+
+    using Stack     = types::Stack;
+    using Registers = types::Storage<types::Byte, cpu_constants::registers::V_REGISTERS>;
+    using Memory    = chip8::memory::Memory;
+
+    enum class Operand : types::Word
+    {
+        NNN = 0x0FFF,
+        X   = 0x0F00,
+        Y   = 0x00F0,
+        N   = 0x000F,
+        KK  = 0x00FF,
+    };
+
     class Cpu final
     {
-        using Byte    = chip8::types::Byte;
-        using Word    = chip8::types::Word;
-        using Address = chip8::types::Address;
-        using Stack   = chip8::types::Storage<Word, chip8::constants::cpu::registers::STACK_SIZE>;
-        using Registers =
-            chip8::types::Storage<Byte, chip8::constants::cpu::registers::V_REGISTERS>;
-        using Memory = chip8::memory::Memory;
+        Memory&   m_memory;
+        Stack     m_stack {};
+        Registers m_v {0};
+
+        types::Byte    m_stkp {memory_constants::CLEAR_BYTE};
+        types::Address m_i {memory_constants::CLEAR_BYTE};
+        types::Address m_pc {memory_constants::ROM_BEGIN};
+        types::Byte    m_dt {memory_constants::CLEAR_BYTE};
+        types::Byte    m_st {memory_constants::CLEAR_BYTE};
+
+        types::Word m_opcode {0x0000};
+
+        types::Word get_operand(Operand op) const noexcept;
+        types::Byte get_register(std::size_t index) const;
+        void        set_register(std::size_t index, types::Byte value);
+
+        std::mt19937                               rng {std::random_device {}()};
+        std::uniform_int_distribution<types::Word> rand_byte {0, 0xFF};
+
+        void fetch();
+        void decode_and_execute();
+
+        /// Unknown or malformed opcode handler.
+        void XXXX();
 
     public:
-        explicit Cpu(Memory& memory) : m_memory(memory) {}
+        explicit Cpu(Memory& m) : m_memory(m) {}
 
-        inline auto fetch() {
-            auto opcode = m_memory.read<Word>(m_pc);
-            std::printf("Fetched instruction: 0x%04X, pc=0x%04x\n", opcode, m_pc);
-            return opcode;
-        };
+        void tick();
 
-        inline void decode_and_execute() {
-            auto instruction = fetch();
-            std::printf("Decoding instruction 0x%04X -> ", instruction);
+        void clock();
+        void tick_sound_timer();
+        void tick_delay_timer();
+        void reset();
 
-            const auto opcode_group = instruction & 0xF000;
+        /// 0NNN (SYS NNN): call RCA 1802 routine. Unused.
+        void SYS();
+        /// 00E0 (CLS): clear the display.
+        void CLS();
 
-            switch (opcode_group) {
-                case 0x0000: {
-                    switch (instruction) {
-                        case 0x00E0: {
-                            std::printf("Decoded as (00E0) CLS (Clear screen).\n");
-                            m_pc += 2;
-                            return;
-                        }
-                        case 0x00EE: {
-                            std::printf("Decoded as (00EE) RET (Return from subroutine).\n");
-                            // pop stack item, set return address
-                            m_pc = m_stk[m_stkp];
+        /// 00EE (RET) return from subroutine.
+        void RET();
+        /// 1NNN (JP NNN): Jump unconditionally to address NNN.
+        void JP();
+        /// 2NNN (CALL NNN): Call subroutine at NNN.
+        void CALL();
 
-                            // set poped item to default clear, and decrement current stack pointer
-                            m_stk[m_stkp--] = 0x0000;
-                            return;
-                        }
-                        default: {
-                            std::printf("Unsupported instruction 0x%04X.\n", instruction);
-                            return;
-                        }
-                    }
-                }
+        /// 3XKK (SE VX, KK): Skip next instruction if V[X] == KK.
+        void SE();
+        /// 4XKK (SNE VX, KK): Skip next instructio if V[X] != KK.
+        void SNE();
+        /// 5XY0 (SE VX, VY): Skip next instruction if V[X] == V[Y].
+        void SEV();
 
-                case 0x1000: {
-                    const Word nnn = instruction & 0x0FFF;
-                    std::printf(
-                        "Decoded as (1NNN) JP NNN (Set PC to NNN).\n"
-                        "Effect: PC=0x%04X\n",
-                        nnn
-                    );
-                    m_pc = nnn;
-                    return;
-                }
+        /// 6XKK (LD VX, KK): Load KK into register V[X].
+        void LD();
+        /// 7XKK (ADD VX, KK): Add KK to the value of V[X]. Keep the low 8-bits of the result.
+        void ADD();
+        /// 8XY0 (LD VX, VY): Load value of register V[Y] into V[X].
+        void LDV();
 
-                case 0x2000: {
-                    const Word nnn = instruction & 0x0FFF;
-                    std::printf(
-                        "Decoded as (2NNN) CALL NNN (Push return address and jump to NNN)\n"
-                        "Effect: push current pc to stack, set PC=0x%04X\n",
-                        nnn
-                    );
-                    m_stk[m_stkp++] = m_pc;
-                    m_pc            = nnn;
-                    return;
-                }
-                case 0x3000: {
-                    const Byte x  = (instruction & 0x0F00) >> 8;
-                    const Byte kk = instruction & 0x00FF;
+        /// 8XY1 (OR VX, VY): Set V[X] to the result of V[X] OR V[Y].
+        void OR();
+        /// 8XY2 (AND VX, VY): Set V[X] to the result of V[X] AND V[Y].
+        void AND();
+        /// 8XY3 (XOR VX, VY): Set V[X] to the result of V[X] XOR V[Y].
+        void XOR();
 
-                    bool skip_instruction = (m_v[x] == kk);
+        /// 8XY4 (ADD VX, VY): Set V[X] to the result of V[X] + V[Y]. V[F] recieves carry.
+        void ADDC();
+        /// 8XY5 (SUB VX, VY): Set V[X] to the result of V[X] - V[Y]. V[F] indicates no-borrow.
+        void SUB();
 
-                    std::printf(
-                        "Decoded as (3XKK) SE VX, KK (Skip next instruction if V[X] == KK)\n"
-                        "Effect: set PC=PC+4 if V[x] == kk.\n"
-                        "x=0x%02X, kk=0x%02X, V[x]->0x%02X, Skip next instruction? (%s)\n",
-                        x, kk, m_v[x], (skip_instruction ? "true" : "false")
-                    );
-                    // skip next instruction
-                    m_pc += skip_instruction ? 4 : 2;
-                    if (skip_instruction) { std::printf("Skipped: PC=0x%04X\n", m_pc); }
-                    return;
-                }
-                case 0x4000: {
-                    const Byte x  = (instruction & 0x0F00) >> 8;
-                    const Byte kk = (instruction & 0x00FF);
+        /// 8XY6 (SHR VX {, VY}): Bit-shift V[X] right. V[F] gets the MSB. V[Y] is optional,
+        /// It indicates how many bits to shift.
+        void SHR();
+        /// 8XY7 (SUBN VX, VY): Set V[X] to the result of V[Y] - V[X]. V[F] indicates no-borrow.
+        void SUBN();
+        /// 8XYE (SHL VX {, VY}): Bit-shift V[X] left. V[F] gets the LSB. V[Y] is optional,
+        /// It indicates how many bits to shift.
+        void SHL();
 
-                    bool skip_instruction = (m_v[x] != kk);
+        /// 9XY0 (SNE VX, VY): Skip next instruction if V[X] != V[Y].
+        void SNEV();
+        /// ANNN (LD I, NNN): Load the address NNN into the register I.
+        void LDI();
+        /// BNNN (JP V0, NNN): Jump unconditionally to address NNN + offset V[0].
+        void JPO();
 
-                    std::printf(
-                        "Decoded as (4XKK) SNE VX, KK (Skip next instruction if V[X] != KK)\n"
-                        "Effect: set PC=PC+4 if V[x] != kk.\n"
-                        "x=0x%02X, kk=0x%02X, V[x]->0x%02X, Skip next instruction? (%s)\n",
-                        x, kk, m_v[x], (skip_instruction ? "true" : "false")
-                    );
-                    // skip next instruction
-                    m_pc += skip_instruction ? 4 : 2;
-                    if (skip_instruction) { std::printf("Skipped: PC=0x%04X\n", m_pc); }
-                    return;
-                }
-                case 0x5000: {
-                    const Byte x = (instruction & 0x0F00) >> 8;
-                    const Byte y = (instruction & 0x00F0) >> 4;
+        /// CXKK (RND VX, KK): Set V[X] to the result of a random byte AND KK.
+        void RND();
+        /// DXYN (DRW VY, VY, N): Draw N-byte sprite at coords (V[X], V[Y]). V[F] indicates
+        /// collision.
+        void DRW();
 
-                    bool skip_instruction = (m_v[x] == m_v[y]);
+        /// EX9E (SKP VX): Skip next instruction if key code V[X] is pressed.
+        void SKP();
+        /// EXA1 (SKP VX): Skip next instruction if key code V[X] is not pressed.
+        void SKNP();
 
-                    std::printf(
-                        "Decoded as (5XY0) SE VX, VY (Skip next instruction if V[X] == V[Y])\n"
-                        "Effect: set PC=PC+4 if V[x] == V[Y].\n"
-                        "x=0x%02X, y=0x%02X, V[x]=0x%02X, V[y]->0x%02X, Skip next instruction? "
-                        "(%s)\n",
-                        x, y, m_v[x], m_v[y], (skip_instruction ? "true" : "false")
-                    );
-                    // skip next instruction
-                    m_pc += skip_instruction ? 4 : 2;
-                    if (skip_instruction) { std::printf("Skipped: PC=0x%04X\n", m_pc); }
-                    return;
-                }
-                case 0x6000: {
-                    const Byte x  = (instruction & 0x0F00) >> 8;
-                    const Byte kk = (instruction & 0x00FF);
+        /// FX07 (LD VX, DT): Load the value of the timer DT into V[X].
+        void LDT();
+        /// FX0A (LD VX {, K}): Wait for key press and store in V[X]. K is unused.
+        void LDK();
+        /// FX15 (LD DT, VX): Set delay timer to V[X].
+        void LDTV();
+        /// FX18 (LD ST, VX): Set sound timer to V[X].
+        void LDS();
 
-                    std::printf(
-                        "Decoded as (6XKK) LD VX, KK (Set V[X] to KK)\n"
-                        "Effect: V[x] = kk\n"
-                        "x=0x%02X, kk=0x%02X, Old V[x]=0x%02X, ",
-                        x, kk, m_v[x]
-                    );
+        /// FX1E (ADD I, VX): Add offset V[X] to address stored in I.
+        void ADDI();
 
-                    m_v[x] = kk;
-                    m_pc += 2;
-
-                    std::printf("New V[x]=0x%02X\n", m_v[x]);
-                    return;
-                }
-                case 0x7000: {
-                    const Byte x  = (instruction & 0x0F00) >> 8;
-                    const Byte kk = (instruction & 0x00FF);
-
-                    std::printf(
-                        "Decoded as (7XKK) ADD VX, KK (Add KK to V[X], keep low 8-bits)\n"
-                        "Effect: V[x] = ((V[x] + kk) & 0x00FF)\n"
-                        "x=0x%02X, kk=0x%02X, Old V[x]=0x%02X, ",
-                        x, kk, m_v[x]
-                    );
-
-                    m_v[x] = (m_v[x] + kk) & 0x00FF;
-                    m_pc += 2;
-
-                    std::printf("New V[x]=0x%02X\n", m_v[x]);
-                    return;
-                }
-                case 0x8000: break;
-                case 0x9000: break;
-                case 0xA000: break;
-                case 0xB000: break;
-                case 0xC000: break;
-                case 0xD000: break;
-                case 0xE000: break;
-                case 0xF000: break;
-                default    : break;
-            }
-        };
-
-    private:
-        /// @brief Bus to internal RAM.
-        Memory& m_memory;
-
-        /// @brief Index register used for memory addressing (16-bit).
-        Address m_i {0x0000};
-
-        /// @brief Program counter (16-bit). Starts at 0x0200 (ROM_BEGIN).
-        Address m_pc {chip8::constants::memory::ROM_BEGIN};
-
-        /// @brief Stack Pointer. Initialized at 0.
-        std::size_t m_stkp {0};
-
-        /// @brief General purpose V registers (16 in total, 8-bit).
-        Registers m_v {chip8::constants::memory::CLEAR_BYTE};
-
-        /// @brief Stack. Store subroutine return addresses.
-        Stack m_stk {0x0000};
-
-        /// @brief Delay Timer. Decrements once every 1/60 second.
-        Byte m_dt {chip8::constants::memory::CLEAR_BYTE};
-
-        /// @brief Sound Timer. Decrements once every 1/60 second.
-        Byte m_st {chip8::constants::memory::CLEAR_BYTE};
+        /// FX29 (LD F, VX): Set I to the font sprite offset at V[X].
+        void LDF();
+        /// FX33 (LD B, VX): Store V[X] as three BCD digits at address I, I + 1, I + 2.
+        void LDBCD();
+        /// FX55 (LD [I], VX): Store V[0] ... V[X] begining at address in I.
+        void LDIV();
+        /// FX65 (LD VX, [I]): Load into V[0] ... V[X] memory values begining at address in I.
+        void LDVI();
     };
+
 }  // namespace chip8::cpu
 
 #endif  // !CHIP8_CPU_H

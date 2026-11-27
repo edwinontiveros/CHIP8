@@ -13,6 +13,7 @@ namespace chip8::constants::cpu
         inline constexpr std::size_t NUM_TIMERS            = 2;
         inline constexpr std::size_t STACK_SIZE            = 16;
         inline constexpr std::size_t NUM_SPECIAL_REGISTERS = 3;
+        inline constexpr std::size_t INSTRUCTION_SIZE      = 2;
 
         // chip8 spec registers config assertions
         static_assert(V_REGISTERS == 16, "Chip8 specifies 16 general purpose V registers: 0-9 A-F");
