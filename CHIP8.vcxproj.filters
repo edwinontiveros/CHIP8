@@ -35,6 +35,33 @@
     <Filter Include="Chip8.Renderer\src">
       <UniqueIdentifier>{893ef5f4-a754-4d8c-ab6d-c51b6081f8d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{5eaf2f8c-6bed-4306-8a6b-82232abddb9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\cpu">
+      <UniqueIdentifier>{d86387df-0f56-47cd-866b-1b2548c7e28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\memory">
+      <UniqueIdentifier>{08599f6f-9d33-43e8-ad0a-93a845c36210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\src\cpu">
+      <UniqueIdentifier>{45b2cb2c-eeab-4cc4-9756-4d4ed5a0dd2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\src\memory">
+      <UniqueIdentifier>{c6d949a8-0114-47ce-878d-da7a1adec90d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\display">
+      <UniqueIdentifier>{1e925b56-8673-435c-b7a0-791234949e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\input">
+      <UniqueIdentifier>{5283e0cb-ca0b-4c93-ba94-427fc1c283b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\constants">
+      <UniqueIdentifier>{53d2d42b-964c-4d77-b264-fc4cb8f12e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chip8.Core\include\cpu\types">
+      <UniqueIdentifier>{b6d0bec3-cd6c-4c8e-9ba8-a0de7e14b81e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="chip8.md">
@@ -44,7 +71,6 @@
     <None Include=".gitignore" />
     <None Include=".editorconfig" />
     <None Include=".clang-format" />
-    <None Include="packages.config" />
     <None Include="vcpkg.json" />
     <None Include="LICENSE" />
     <None Include="README.md" />
@@ -53,28 +79,40 @@
     <ClCompile Include="src\app\main.cpp">
       <Filter>Chip8.App\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\frontend.cpp">
-      <Filter>Chip8.Renderer\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\memory.cpp">
+    <ClCompile Include="src\pch.cpp">
       <Filter>Chip8.Core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\cpu\cpu.cpp">
+      <Filter>Chip8.Core\src\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\memory\memory.cpp">
+      <Filter>Chip8.Core\src\memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core\memory.h">
+    <ClInclude Include="include\pch.h">
       <Filter>Chip8.Core\include</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\constants.h">
-      <Filter>Chip8.Core\include</Filter>
+    <ClInclude Include="include\core\cpu\cpu.h">
+      <Filter>Chip8.Core\include\cpu</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\types.h">
-      <Filter>Chip8.Core\include</Filter>
+    <ClInclude Include="include\constants\display_constants.h">
+      <Filter>Chip8.Core\include\constants</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\sdl_wrappers.h">
-      <Filter>Chip8.Renderer\include</Filter>
+    <ClInclude Include="include\constants\cpu_constants.h">
+      <Filter>Chip8.Core\include\constants</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\frontend.h">
-      <Filter>Chip8.Renderer\include</Filter>
+    <ClInclude Include="include\constants\input_constants.h">
+      <Filter>Chip8.Core\include\constants</Filter>
+    </ClInclude>
+    <ClInclude Include="include\constants\memory_constants.h">
+      <Filter>Chip8.Core\include\constants</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\memory\memory.h">
+      <Filter>Chip8.Core\include\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\types\types.h">
+      <Filter>Chip8.Core\include\cpu\types</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

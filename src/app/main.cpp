@@ -1,92 +1,50 @@
-#include <chrono>
-#include <exception>
+#include "pch.h"
+
 #include <iostream>
-#include <memory>
-#include <stdexcept>
 
-#include "renderer/frontend.h"
-#include "core/memory.h"
-
-int run_frontend() {
-    using Frontend       = chip8::graphics::frontend::SDLFrontend;
-    constexpr int WIDTH  = 1280;
-    constexpr int HEIGHT = 640;
-
-    std::cout << "Running Chip8 Frontend..." << '\n';
-
-    try {
-        Frontend renderer {WIDTH, HEIGHT, "Chip-8 Emulator"};
-
-        float dbPosX = 20.0F;
-        float dbPosY = 20.0F;
-
-        while (true) {
-            if (!renderer.processEvents()) break;
-
-            renderer.clear();
-            renderer.drawDebugText(dbPosX, dbPosY, "Chip-8 Emulator");
-            renderer.drawDebugText(dbPosX, (dbPosY * 2), "SDL3 working!");
-            renderer.present();
-
-            dbPosX = ((int) dbPosX % WIDTH) + 2.0F;
-
-            SDL_Delay(10);
-        }
-
-        return 0;
-    }
-    catch (const std::out_of_range& exception) {
-        std::cerr << "Fatal error: " << exception.what() << '\n';
-
-        return 1;
-    }
-}
+#include "core/cpu/cpu.h"
+#include "core/memory/memory.h"
+#include "types/types.h"
 
 int main() {
-    std::cout << "Chip8 Emulator console" << '\n';
+    using namespace chip8::cpu;
+    using namespace chip8::memory;
 
-    const auto mem {std::make_unique<chip8::memory::Memory>()};
-    mem->clear();
+    std::cout << "Hello world Chip8" << '\n';
 
-    const auto  dump = mem->dump();
-    std::size_t skip = 0;
-    for (const auto& m: dump) {
-        std::cout << "0x0" << std::hex << static_cast<int>(m) << ' ';
-        if (skip++ >= 6) {
-            std::cout << '\n';
-            skip = 0;
-        }
-    }
-    std::cout << '\n';
+    Memory memory {};
+    Cpu    cpu {memory};
 
-    using Memory = chip8::memory::Memory;
+    /// Load into register V[0] the value FF
+    memory.write<types::Word>(0x0200, 0x60FF);
+    cpu.tick();
 
-    try {
-        mem->write<Memory::Byte>(0x0200, 0xAA);
-        const auto byte_value = mem->read<Memory::Byte>(0x0200);
-        std::cout
-            << "Value written at 0x0200: "
-            << std::hex
-            << static_cast<int>(byte_value)
-            << '\n';
+    /// Load into register V[1] the value A1
+    memory.write<types::Word>(0x0202, 0x61A1);
+    cpu.tick();
 
-        mem->write<Memory::Word>(0x0200, 0xFFFF);
-        const auto word_value = mem->read<Memory::Word>(0x0201);
-        std::cout
-            << "Value written at 0x0200: 0x"
-            << std::hex
-            << static_cast<int>(word_value)
-            << '\n';
-    }
-    catch (const std::out_of_range& e) {
-        std::cerr
-            << "Correctly throw and catch out of bounds or misaligned read / write:"
-            << '\n'
-            << e.what()
-            << '\n';
-    }
+    /// V[0] XOR V[1]
+    memory.write<types::Word>(0x0204, 0x8013);
+    cpu.tick();
 
-    run_frontend();
+    // CALL subroutine at 0x0220: Generate random number
+    memory.write<types::Word>(0x0206, 0x2220);
+
+    // After return from subroutine, this is the return address. Shift left the random number
+    memory.write<types::Word>(0x0208, 0x820E);
+
+    // generate random number between 0x00 and 0x80, store in V[2]
+    memory.write<types::Word>(0x0220, 0xC280);
+    // add 3 to V[2]
+    memory.write<types::Word>(0x0222, 0x7203);
+    // return from subroutine
+    memory.write<types::Word>(0x0224, 0x00EE);
+
+    for (std::size_t i = 0; i < 5; i++) cpu.tick();
+    
+
+    cpu.reset();
 
     return 0;
 }
+
